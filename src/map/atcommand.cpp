@@ -4,6 +4,7 @@
 #include "atcommand.hpp"
 
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <set>
 #include <unordered_map>
@@ -9065,15 +9066,37 @@ ACMD_FUNC(mapflag) {
  *-----------------------------------*/
 ACMD_FUNC(showexp)
 {
-	if (sd->state.showexp) {
+	nullpo_retr(-1, sd);
+
+	if(message && *message) {
+		// Has parameters
+		int32 minute_count;
+		if(sscanf(message, "%d", &minute_count) != 1) {
+			return -1;
+		} else if(minute_count < 1) {
+			return -1;
+		}
+
+		pc_set_showexp_timer(sd, minute_count * 60 * 1000);
+		pc_reset_accumulated_exp(sd);
+		sd->state.showexp = 1;
+
+		char output[CHAT_SIZE_MAX] = {0};
+		sprintf(output, msg_txt(sd, 1539), minute_count); // Gained exp is now shown every %d minutes
+		clif_displaymessage(fd, output);
+		return 0;
+
+	} else if (sd->state.showexp) {
 		sd->state.showexp = 0;
 		clif_displaymessage(fd, msg_txt(sd,1316)); // Gained exp will not be shown.
+		pc_delete_showexp_timer(sd);
+		return 0;
+
+	} else {
+		sd->state.showexp = 1;
+		clif_displaymessage(fd, msg_txt(sd,1317)); // Gained exp is now shown.
 		return 0;
 	}
-
-	sd->state.showexp = 1;
-	clif_displaymessage(fd, msg_txt(sd,1317)); // Gained exp is now shown.
-	return 0;
 }
 
 ACMD_FUNC(showzeny)
