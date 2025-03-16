@@ -7494,6 +7494,9 @@ int32 skill_castend_damage_id (struct block_list* src, struct block_list *bl, ui
 			clif_skill_nodamage( src, *src, skill_id, sp );
 		}
 		break;
+	case NPC_LOCKON_LASER_ATK:
+		skill_attack(skill_get_type(skill_id), src, src, bl, skill_id, skill_lv, tick, flag);
+		break;
 
 	default:
 		ShowWarning("skill_castend_damage_id: Unknown skill used:%d\n",skill_id);
@@ -13659,6 +13662,11 @@ int32 skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, 
 			map_foreachinrange( skill_area_sub, bl, range, BL_CHAR, src, skill_id, skill_lv, tick, flag | BCT_ENEMY | SD_SPLASH | 1, skill_castend_nodamage_id );
 		}
 		break;
+	case NPC_LOCKON_LASER:
+		if(check_distance_bl(src, bl, skill_get_range(skill_id, skill_lv))) {
+			status_change_start(src, bl, SC_LOCKON_LASER, 0, skill_lv, src->id, 1000, 0, 12 * 1000, SCSTART_NOAVOID);
+		}
+		break;
 
 	default: {
 		std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);
@@ -15652,6 +15660,11 @@ int32 skill_castend_pos2(struct block_list* src, int32 x, int32 y, uint16 skill_
 		skill_blown(src, src, skill_get_blewcount(skill_id, skill_lv), unit_getdir(src), (enum e_skill_blown)(BLOWN_IGNORE_NO_KNOCKBACK | BLOWN_DONT_SEND_PACKET));
 		clif_blown(src);
 		break;
+	case NPC_LOCKON_LASER_ATK:
+		i = skill_get_splash(skill_id, skill_lv);
+		map_foreachinarea(skill_area_sub, src->m, x - i, y - i, x + i, y + i, BL_CHAR,
+			src, skill_id, skill_lv, tick, flag | skill_get_unit_target(skill_id), skill_castend_damage_id);
+		break;
 
 	default:
 		ShowWarning("skill_castend_pos2: Unknown skill used:%d\n",skill_id);
@@ -16323,6 +16336,10 @@ std::shared_ptr<s_skill_unit_group> skill_unitsetting(struct block_list *src, ui
 		
 	case NW_GRENADES_DROPPING:
 		limit = skill_get_time2(skill_id,skill_lv);
+		break;
+	case NPC_LOCKON_LASER_ATK:
+		limit = 1000;
+		val1 = src->id;
 		break;
 	}
 
@@ -17046,6 +17063,10 @@ int32 skill_unit_onplace_timer(struct skill_unit *unit, struct block_list *bl, t
 				case SOA_TALISMAN_OF_BLACK_TORTOISE:
 					skill_attack( skill_get_type(sg->skill_id), ss, ss, bl, sg->skill_id, sg->skill_lv, tick, 0 );
 					break;
+				//case NPC_LOCKON_LASER_ATK:
+				//	ShowInfo("DAMAGE\n");
+				//	skill_castend_pos2(ss, unit->bl.x, unit->bl.y, NPC_LOCKON_LASER_ATK, sg->skill_id, sg->skill_lv,BCT_ENEMY);
+				//	break;
 				default:
 					skill_attack(skill_get_type(sg->skill_id),ss,&unit->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			}
@@ -22556,6 +22577,13 @@ static int32 skill_unit_timer_sub(DBKey key, DBData *data, va_list ap)
 					}
 					// No damage until expiration
 					return 0;
+				} else if (group->skill_id == NPC_LOCKON_LASER_ATK) {
+					struct block_list* bl = map_id2bl(group->val1);
+					nullpo_retr(-1, bl);
+
+					unit_skilluse_pos(bl, unit->bl.x, unit->bl.y, group->skill_id, group->skill_lv);
+					
+					skill_delunit(unit);
 				}
 				break;
 		}

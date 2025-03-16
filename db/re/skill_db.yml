@@ -50440,3 +50440,33 @@ Body:
     Duration1: 10000
     Cooldown: 60000
     Status: Emergency_Move
+  - Id: 773
+    Name: NPC_LOCKON_LASER
+    Description: Lockon laser
+    MaxLevel: 5
+    Type: Magic
+    TargetType: Self
+    DamageFlags:
+      NoDamage: true
+    Hit: Single
+    HitCount: 1
+    Range: 18
+    Status: Lockon_Laser
+  - Id: 774
+    Name: NPC_LOCKON_LASER_ATK
+    Description: Lockon laser attack
+    MaxLevel: 5
+    Type: Weapon
+    TargetType: Ground
+    DamageFlags:
+      IgnoreFlee: true
+      IgnoreDefense: true
+    Hit: Single
+    HitCount: 1
+    SplashArea: 3
+    Range: 3
+    Unit:
+      Id: Dummyskill
+      Range: 3
+      Interval: 0
+      Target: Enemy

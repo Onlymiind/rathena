@@ -9338,6 +9338,8 @@ static int32 status_get_sc_interval(enum sc_type type)
 			return 5000;
 		case SC_STAR_BURST:
 			return 300;
+		case SC_LOCKON_LASER:
+			return 1000;
 		default:
 			break;
 	}
@@ -12650,6 +12652,11 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 			val3 = 50 + 50 * val1;
 			break;
 
+		case SC_LOCKON_LASER:
+			tick_time = status_get_sc_interval(type);
+			val4 = duration;
+			break;
+
 		default:
 			if (calc_flag.none() && scdb->skill_id == 0 && scdb->icon == EFST_BLANK && scdb->opt1 == OPT1_NONE && scdb->opt2 == OPT2_NONE && scdb->state.none() && scdb->flag.none() && scdb->endonstart.empty() && scdb->endreturn.empty() && scdb->fail.empty() && scdb->endonend.empty()) {
 				// Status change with no calc, no icon, and no skill associated...?
@@ -14787,6 +14794,25 @@ TIMER_FUNC(status_change_timer){
 			}
 		}
 		break;
+	case SC_LOCKON_LASER: {
+		struct block_list* src_bl = map_id2bl(sce->val2);
+		nullpo_retr(-1, src_bl);
+
+		if(!check_distance_bl(&sd->bl, src_bl, skill_get_range(NPC_LOCKON_LASER, sce->val1))) {
+			break;
+		} else if(!path_search_long(nullptr, sd->bl.m, src_bl->x, src_bl->y, sd->bl.x, sd->bl.y, CELL_CHKWALL)) {
+			break;
+		}
+
+		int16 x = sd->bl.x + 1;
+		int16 y = sd->bl.y;
+		if(!map_random_dir(&sd->bl, &x, &y)) {
+			break;
+		}
+		skill_unitsetting(src_bl, NPC_LOCKON_LASER_ATK, sce->val1, x, y, 0);
+
+		break;
+	}
 	}
 
 	// If status has an interval and there is at least 100ms remaining time, wait for next interval

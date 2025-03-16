@@ -9791,3 +9791,8 @@ Body:
       .@val1 = getstatus(SC_CONTENTS_35, 1);
       bonus bMatk, .@val1;
       bonus bBaseAtk, .@val1;
+  - Status: Lockon_Laser
+    Icon: EFST_LOCKON_LASER
+    Flags:
+      NoSave: true
+      RemoveOnChangeMap: true
