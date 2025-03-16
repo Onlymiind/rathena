@@ -13663,7 +13663,7 @@ int32 skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, 
 		}
 		break;
 	case NPC_LOCKON_LASER:
-		if(check_distance_bl(src, bl, skill_get_range(skill_id, skill_lv)) {
+		if(check_distance_bl(src, bl, skill_get_range(skill_id, skill_lv))) {
 			status_change_start(src, bl, SC_LOCKON_LASER, 0, skill_lv, src->id, 1000, 0, 12 * 1000, SCSTART_NOAVOID);
 		}
 		break;
@@ -15663,7 +15663,7 @@ int32 skill_castend_pos2(struct block_list* src, int32 x, int32 y, uint16 skill_
 	case NPC_LOCKON_LASER_ATK:
 		i = skill_get_splash(skill_id, skill_lv);
 		map_foreachinarea(skill_area_sub, src->m, x - i, y - i, x + i, y + i, BL_CHAR,
-			src, skill_id, skill_lv, tick, flag, skill_castend_damage_id);
+			src, skill_id, skill_lv, tick, flag | skill_get_unit_target(skill_id), skill_castend_damage_id);
 		break;
 
 	default:
@@ -22581,7 +22581,7 @@ static int32 skill_unit_timer_sub(DBKey key, DBData *data, va_list ap)
 					struct block_list* bl = map_id2bl(group->val1);
 					nullpo_retr(-1, bl);
 
-					skill_castend_pos2(bl, unit->bl.x, unit->bl.y, NPC_LOCKON_LASER_ATK, group->skill_id, group->skill_lv,BCT_ENEMY);
+					unit_skilluse_pos(bl, unit->bl.x, unit->bl.y, group->skill_id, group->skill_lv);
 					
 					skill_delunit(unit);
 				}

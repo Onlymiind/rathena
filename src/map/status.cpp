@@ -14798,7 +14798,7 @@ TIMER_FUNC(status_change_timer){
 		struct block_list* src_bl = map_id2bl(sce->val2);
 		nullpo_retr(-1, src_bl);
 
-		if(!check_distance_bl(&sd->bl, src_bl, skill_get_range(NPC_LOCKON_LASER, sce->val1)) {
+		if(!check_distance_bl(&sd->bl, src_bl, skill_get_range(NPC_LOCKON_LASER, sce->val1))) {
 			break;
 		} else if(!path_search_long(nullptr, sd->bl.m, src_bl->x, src_bl->y, sd->bl.x, sd->bl.y, CELL_CHKWALL)) {
 			break;

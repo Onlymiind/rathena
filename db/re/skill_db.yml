@@ -50456,7 +50456,7 @@ Body:
     Name: NPC_LOCKON_LASER_ATK
     Description: Lockon laser attack
     MaxLevel: 5
-    Type: Magic
+    Type: Weapon
     TargetType: Ground
     DamageFlags:
       IgnoreFlee: true

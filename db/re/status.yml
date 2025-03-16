@@ -9793,3 +9793,6 @@ Body:
       bonus bBaseAtk, .@val1;
   - Status: Lockon_Laser
     Icon: EFST_LOCKON_LASER
+    Flags:
+      NoSave: true
+      RemoveOnChangeMap: true
