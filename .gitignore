@@ -2,6 +2,7 @@ autom4te.cache/
 
 #Global
 .vscode
+.cache
 .Apple*
 .DS_Store
 .clang_complete

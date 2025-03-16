@@ -1425,6 +1425,8 @@ enum sc_type : int16 {
 	SC_CONTENTS_34,
 	SC_CONTENTS_35,
 
+	SC_LOCKON_LASER,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 };
 
